@@ -127,19 +127,33 @@ button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;pad
 input,textarea,select{font:inherit;color:inherit}
 textarea{resize:vertical}
 
-#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .5s,visibility .5s}
-#splash.hide{opacity:0;visibility:hidden;pointer-events:none}
-.sp-logo{width:88px;height:88px;border-radius:26px;background:#1a1a1a;color:var(--ink-inv);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:600;box-shadow:10px 10px 24px rgba(174,180,190,.5),-6px -6px 16px rgba(255,255,255,.9),inset 0 1px 0 rgba(255,255,255,.14);animation:pop 1s cubic-bezier(.2,.9,.2,1) both;position:relative;overflow:hidden}
-.sp-logo::after{content:"";position:absolute;inset:0;background:none;transform:translateX(-100%);animation:shine 1.4s .4s ease both}
-.sp-t{margin-top:22px;font-size:15px;opacity:0;animation:fu .6s .5s ease both;letter-spacing:.01em}
-.sp-s{margin-top:6px;font-size:11.5px;color:var(--mute);opacity:0;animation:fu .6s .7s ease both}
-.sp-d{margin-top:24px;display:flex;gap:6px;opacity:0;animation:fu .6s .9s ease both}
-.sp-d span{width:5px;height:5px;border-radius:50%;background:var(--text-primary);animation:dot 1.2s infinite ease-in-out}
-.sp-d span:nth-child(2){animation-delay:.15s}.sp-d span:nth-child(3){animation-delay:.3s}
-@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.05);opacity:1}100%{transform:scale(1)}}
-@keyframes shine{to{transform:translateX(100%)}}
-@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@keyframes dot{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+/* ============ v1.0 启动画面:深黑径向+噪点+巨幅水印+加粗L+脉冲环 ============ */
+#splash{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 38%,#1a1a1a 0%,#000 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);transition:opacity .4s cubic-bezier(.4,0,.2,1),transform .4s cubic-bezier(.4,0,.2,1),visibility .4s}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-10px)}
+.splash-glow{position:absolute;top:46%;left:50%;width:82vmin;height:82vmin;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.05) 0%,transparent 62%);pointer-events:none}
+.splash-noise{position:absolute;inset:0;opacity:.04;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");background-size:180px 180px}
+/* 内容包裹层:整体视觉重心下移 4vh(要求3~5vh区间) */
+.splash-inner{position:relative;display:flex;flex-direction:column;align-items:center;transform:translateY(4vh)}
+/* 巨幅水印:标题正下方底纹,60vw、-12°、5%白、最底层、不拦截;1440方图 max-height 兜底防溢出 */
+.splash-wm{position:absolute;z-index:0;left:50%;top:clamp(150px,32vmin,236px);width:clamp(220px,60vw,520px);max-height:42vh;object-fit:contain;opacity:.05;transform:translateX(-50%) rotate(-12deg);pointer-events:none;user-select:none;-webkit-user-drag:none;animation:sl-wm .8s .4s cubic-bezier(.4,0,.2,1) both}
+.splash-logo{position:relative;z-index:1;width:clamp(120px,30vmin,200px);aspect-ratio:1;display:flex;align-items:center;justify-content:center;animation:sl-in .6s cubic-bezier(.4,0,.2,1) both}
+/* L:300细线 → 800加粗有厚度,纯白实色(弃用灰白裁字渐变),text-shadow 双层微发光 */
+.splash-logo b{font-size:clamp(76px,20vmin,150px);font-weight:800;line-height:1;font-family:var(--font),system-ui,sans-serif;color:#fff;text-shadow:0 0 22px rgba(255,255,255,.32),0 0 52px rgba(255,255,255,.10)}
+.splash-ring{position:absolute;top:50%;left:50%;width:clamp(140px,38vmin,280px);aspect-ratio:1;border-radius:50%;border:1px solid rgba(255,255,255,.14);transform:translate(-50%,-50%);pointer-events:none;animation:sl-ring 2.4s ease-out infinite}
+.splash-ring.r2{animation-delay:1.2s;border-color:rgba(255,255,255,.08)}
+@keyframes sl-ring{0%{transform:translate(-50%,-50%) scale(.72);opacity:.5}100%{transform:translate(-50%,-50%) scale(1.28);opacity:0}}
+.splash-t{position:relative;z-index:1;margin-top:clamp(18px,3.6vmin,32px);font-size:clamp(15px,2.2vmin,18px);font-weight:500;color:rgba(255,255,255,.92);letter-spacing:.04em;animation:sl-fu .6s .25s ease both}
+.splash-s{position:relative;z-index:1;margin-top:7px;font-size:12px;color:rgba(255,255,255,.42);animation:sl-fu .6s .4s ease both}
+.splash-d{position:relative;z-index:1;margin-top:26px;display:flex;gap:6px;animation:sl-fu .6s .55s ease both}
+.splash-d i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.6);animation:sl-dot 1.2s infinite ease-in-out}
+.splash-d i:nth-child(2){animation-delay:.15s}.splash-d i:nth-child(3){animation-delay:.3s}
+/* 右下角署名:安全区+clamp 边距,0.62 白,不抢戏、不遮挡主视觉 */
+.splash-copy{position:absolute;z-index:1;right:calc(env(safe-area-inset-right,0px) + clamp(14px,3vmin,22px));bottom:calc(env(safe-area-inset-bottom,0px) + clamp(14px,3vmin,22px));font-size:clamp(11px,1.8vmin,13px);line-height:1;letter-spacing:.03em;color:rgba(255,255,255,.62);pointer-events:none;animation:sl-fu .6s .55s ease both}
+@keyframes sl-in{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+@keyframes sl-fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes sl-wm{from{opacity:0;transform:translateX(-50%) rotate(-12deg) scale(.96)}to{opacity:.05;transform:translateX(-50%) rotate(-12deg) scale(1)}}
+@keyframes sl-dot{0%,80%,100%{transform:scale(.5);opacity:.25}40%{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.splash-ring,.splash-d i,.splash-wm,.splash-copy{animation:none}.splash-logo,.splash-t,.splash-s,.splash-d{animation-duration:.01ms;animation-delay:0ms}#splash{transition:opacity .2s}}
 
 .topbar{position:sticky;top:0;z-index:50;background:rgba(238,240,244,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(210,215,222,.4)}
 .tb{max-width:1240px;margin:0 auto;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -275,6 +289,12 @@ textarea{resize:vertical}
 .dock .center{width:60px;height:60px;background:var(--bg);box-shadow:var(--sh-out);color:var(--text)}
 .dock .center:active{box-shadow:var(--sh-in)}
 [data-theme="dark"] .dock .center{background:rgba(255,255,255,.14);color:var(--ink-inv)}
+/* v1.0.1 中心气泡展开态:独立 class 控制放大常驻=助手进行中,内容显示期间不消失 */
+.dock .center.open{transform:translateY(-6px) scale(1.2);box-shadow:0 0 0 6px rgba(17,18,20,.06),0 12px 26px rgba(17,18,20,.16),var(--sh-out)}
+.dock .center.open:hover{transform:translateY(-6px) scale(1.2)}
+.dock .center.open:active{transform:translateY(-6px) scale(1.12);box-shadow:0 0 0 6px rgba(17,18,20,.06),0 12px 26px rgba(17,18,20,.16),var(--sh-out)}
+[data-theme="dark"] .dock .center.open{box-shadow:0 0 0 6px rgba(255,255,255,.08),0 12px 26px rgba(0,0,0,.5)}
+[data-theme="dark"] .dock .center.open:active{box-shadow:0 0 0 6px rgba(255,255,255,.08),0 12px 26px rgba(0,0,0,.5)}
 
 /* v0.9 emoji:半宽表情包弹窗 */
 .emoji-modal{position:fixed;bottom:0;left:0;right:0;height:50vh;background:rgba(20,20,20,.85);backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);border-top:1px solid rgba(255,255,255,.1);border-radius:28px 28px 0 0;z-index:1000;transform:translateY(100%);transition:transform .4s var(--ease-spring);display:flex;flex-direction:column}
@@ -340,7 +360,17 @@ textarea{resize:vertical}
 .fc p{margin:0;color:var(--mute);font-size:11.5px;line-height:1.5}
 
 .editor{display:grid;grid-template-columns:320px 1fr;gap:14px;min-height:70vh}
-@media(max-width:900px){.editor{grid-template-columns:1fr}}
+/* v0.9.3 手机端:功能区改单滚动轴(body),参数面板/预览不再各自成滚动容器,点任何空白缝隙都能跟随页面滑动 */
+@media(max-width:900px){
+  .editor{grid-template-columns:1fr;min-height:0}
+  .panel{max-height:none;overflow:visible;height:auto}
+  .stage{overflow:visible}
+  .stage-body{overflow:visible;min-height:420px;overscroll-behavior:auto}
+  .fgrid{grid-template-columns:1fr;gap:14px}
+  .fc{min-height:84px}
+  /* v1.0.1 手机端助手面板:Dock 正上方居中底部面板,放大的中心气泡常驻可见可点 */
+  .floater{left:12px;right:12px;bottom:calc(114px + env(safe-area-inset-bottom,0px));width:auto;height:min(58vh,520px);max-height:calc(100vh - 156px);border-radius:26px;transform-origin:50% 100%}
+}
 .panel{background:var(--bg);border:none;border-radius:26px;padding:16px;height:fit-content;max-height:calc(100vh - 140px);overflow-y:auto;box-shadow:var(--sh-out)}
 .panel h3{margin:14px 0 8px;font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
 .panel h3:first-child{margin-top:0}
@@ -367,7 +397,9 @@ textarea{resize:vertical}
 #previewMode{display:flex;background:var(--surface-3);border-radius:9px;padding:3px;gap:2px;box-shadow:var(--sh-in-sm)}
 #previewMode button{height:26px;padding:0 12px;border-radius:7px;font-size:11px;color:var(--mute)}
 #previewMode button.on{background:var(--surface);color:var(--text-primary);box-shadow:var(--sh-out-sm)}
-.stage-body{flex:1;padding:30px 20px;display:flex;align-items:center;justify-content:center;background:var(--surface-3);min-height:400px;overflow:auto}
+/* v0.9.3 修复:flex 居中滚动死区——居中改由子项 margin:auto 承担,留白区触摸也能滚 */
+.stage-body{flex:1;padding:30px 20px;display:flex;background:var(--surface-3);min-height:400px;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain}
+.stage-body>*{margin:auto;max-width:100%}
 .hint{color:var(--mute);font-size:11px;margin:6px 0}
 
 .fab{position:fixed;right:22px;bottom:22px;width:54px;height:54px;border-radius:50%;background:#1a1a1a;color:var(--ink-inv);display:flex;align-items:center;justify-content:center;z-index:40;--icb:#141518;box-shadow:6px 6px 14px rgba(0,0,0,.4),inset 1px 1px 1px rgba(255,255,255,.12);transition:transform .24s var(--ease-spring),box-shadow .18s;cursor:pointer;border:none}
@@ -377,7 +409,9 @@ textarea{resize:vertical}
 .fab .ic{transform:scale(1.4)}
 
 .floater{position:fixed;right:20px;bottom:20px;width:360px;height:500px;max-width:calc(100vw - 20px);max-height:calc(100vh - 20px);background:var(--glass-bg-strong);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-border);border-radius:22px;z-index:60;display:none;flex-direction:column;overflow:hidden;box-shadow:var(--sh-modal)}
-.floater.on{display:flex}
+.floater.on{display:flex;animation:flo-in .28s var(--ease-spring) both}
+@keyframes flo-in{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.floater.on{animation:none}}
 .fh{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;cursor:move;background:var(--surface);user-select:none}
 .fh .ai-av{width:30px;height:30px;border-radius:10px;background:#1a1a1a;color:var(--ink-inv);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;box-shadow:2px 2px 6px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.12)}
 .fh .ai-nm{font-size:13px;font-weight:600;flex:1;min-width:0}
@@ -399,6 +433,32 @@ textarea{resize:vertical}
 /* v0.9 emoji:对话中渲染的表情图(支持 GIF/WebP 动画) */
 .emoji-msg-img{max-width:120px;max-height:120px;border-radius:12px;object-fit:contain;display:block;margin:4px 0}
 .msg.u .emoji-msg-img{margin-left:auto}
+/* v0.9.2 AI回复表情:80x80内联混排,不独占行 */
+.chat-emoji{width:80px;height:80px;border-radius:12px;object-fit:cover;display:inline-block;vertical-align:middle;margin:0 2px 0 6px;cursor:zoom-in;box-shadow:var(--sh-out-sm);transition:transform .25s cubic-bezier(0.34,1.56,.64,1);background:var(--surface-2)}
+.chat-emoji:hover{transform:scale(1.06)}
+.chat-emoji:active{transform:scale(.94)}
+/* v0.9.2 表情大图预览(毛玻璃) */
+#imgView{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(17,18,20,.55);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%)}
+#imgView.on{display:flex}
+#imgView img{max-width:92vw;max-height:82vh;border-radius:18px;box-shadow:var(--sh-modal);animation:ivPop .3s cubic-bezier(0.34,1.56,.64,1)}
+@keyframes ivPop{from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ============ v0.9.3 手机端实时预览弹层(桌面端不启用,保留内嵌预览) ============ */
+#mpPreviewBtn{display:none;position:fixed;right:16px;bottom:calc(94px + env(safe-area-inset-bottom,0px));z-index:45;height:42px;padding:0 18px;border-radius:999px;background:#1a1a1a;color:var(--ink-inv);border:none;font-size:13px;box-shadow:var(--sh-modal);align-items:center;gap:7px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s var(--ease-spring)}
+#mpPreviewBtn .ic{width:17px;height:17px}
+#mpPreviewBtn:active{transform:scale(.92)}
+#mobilePreview{position:fixed;inset:0;z-index:9999;display:none;align-items:flex-end;justify-content:center;padding:0 12px calc(env(safe-area-inset-bottom,0px) + 20px)}
+#mobilePreview.preview-active{display:flex}
+.mp-mask{position:absolute;inset:0;background:rgba(17,18,20,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:mpFade .25s ease}
+.mp-card{position:relative;width:min(90vw,420px);max-height:78vh;background:var(--glass-bg-strong);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-border);border-radius:26px;box-shadow:var(--sh-modal);display:flex;flex-direction:column;overflow:hidden;animation:mpUp .36s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes mpUp{from{transform:translateY(46px) scale(.95);opacity:0}to{transform:none;opacity:1}}
+@keyframes mpFade{from{opacity:0}to{opacity:1}}
+.mp-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;font-size:14px;color:var(--text-primary)}
+.mp-x{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);color:var(--text-primary);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-out-sm)}
+.mp-x:active{box-shadow:var(--sh-in-sm)}
+.mp-stage{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;padding:6px 14px 20px;display:flex;flex-direction:column;align-items:center;min-height:220px}
+.mp-stage>*{max-width:100%}
+@media(min-width:901px){#mpPreviewBtn,#mobilePreview{display:none !important}}
 .think-cap{align-self:flex-start;font-size:10.5px;color:var(--text-secondary);background:var(--surface-2);padding:3px 10px 3px 8px;border-radius:999px;box-shadow:var(--sh-out-sm);cursor:pointer;margin:2px 0 -4px;display:inline-flex;align-items:center;gap:5px;transition:.15s;--icb:#f2f3f6}
 .think-cap:hover{color:var(--text-primary)}
 .think-cap:active{box-shadow:var(--sh-in-sm)}
@@ -565,16 +625,29 @@ textarea{resize:vertical}
 <!-- v0.8.4 glass:背景光斑层(最低层,制造通透感) -->
 <div class="bg-blur" aria-hidden="true"><span class="glow g1"></span><span class="glow g2"></span><span class="glow g3"></span></div>
 
+<!-- v1.0 启动画面:深黑+巨幅水印底纹+加粗L+脉冲环 -->
 <div id="splash">
-  <div class="sp-logo">L</div>
-  <div class="sp-t">LinHの美化小叽</div>
-  <div class="sp-s">正在为你准备美化小工具</div>
-  <div class="sp-d"><span></span><span></span><span></span></div>
+  <div class="splash-glow" aria-hidden="true"></div>
+  <div class="splash-noise" aria-hidden="true"></div>
+  <div class="splash-inner">
+    <img class="splash-wm" alt="" aria-hidden="true" draggable="false"
+      src="https://img2.tofaka.com/autoupload/fr/Zy9nZr8qknZ0w4NQ-30sTrs9etjV1KKV501BnyUAd0Oyl5f0KlZfm6UsKj-HyTuv/20260912/6YjW/1440X1440/%E6%97%A0%E6%A0%87%E9%A2%9885_20260909171017.png/webp"
+      onerror="this.remove()">
+    <div class="splash-logo" aria-label="LinH">
+      <span class="splash-ring r1" aria-hidden="true"></span>
+      <span class="splash-ring r2" aria-hidden="true"></span>
+      <b aria-hidden="true">L</b>
+    </div>
+    <div class="splash-t">LinHの美化小叽</div>
+    <div class="splash-s">正在为你准备美化小工具</div>
+    <div class="splash-d"><i></i><i></i><i></i></div>
+  </div>
+  <div class="splash-copy" aria-hidden="true">© LinH</div>
 </div>
 
 <header class="topbar">
   <div class="tb">
-    <div class="brand"><div class="bm">L</div>美化小叽<small id="brandVer">· v0.9.1</small></div>
+    <div class="brand"><div class="bm">L</div>美化小叽<small id="brandVer">· v1.0.1</small></div>
     <div class="ta">
       <button class="ib" id="btnUpdates" title="更新日志" onclick="openChangelog()"><span class="ic ic-bell"></span><span class="dt"></span></button>
       <button class="ib" title="安装到桌面" onclick="tryInstall()"><span class="ic ic-inst"></span></button>
@@ -589,7 +662,7 @@ textarea{resize:vertical}
 
 <div id="p-home">
   <div class="card hero">
-    <span class="chip"><span style="width:5px;height:5px;border-radius:50%;background:var(--text-primary)"></span>v0.9.1 · 单文件本地版</span>
+    <span class="chip"><span style="width:5px;height:5px;border-radius:50%;background:var(--text-primary)"></span>v1.0.1 · 单文件本地版</span>
     <h1>为「小手机」软件<br/>打造属于你的美化主题</h1>
     <p>参数化编辑气泡、聊天页、Memory、头像框、按钮、输入框和 HTML 小插件,实时预览、支持自定义代码,搭配小淮宝助手辅助设计。</p>
     <div class="hcta">
@@ -772,7 +845,7 @@ textarea{resize:vertical}
   <button class="item" title="主页" onclick="go('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/></svg></button>
   <button class="item" title="功能" onclick="go('functions')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
   <button class="item" title="设置" onclick="go('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
-  <button class="item center" title="小淮宝助手" onclick="openEditorAI()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5v2"/><circle cx="12" cy="3.2" r="1"/><rect x="5" y="6.5" width="14" height="12" rx="4.5"/><circle cx="9.5" cy="11.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11.5" r="1.3" fill="currentColor" stroke="none"/><path d="M9 15.2c1 1.6 5 1.6 6 0"/></svg></button>
+  <button class="item center" title="小淮宝助手" onclick="toggleDockAI()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5v2"/><circle cx="12" cy="3.2" r="1"/><rect x="5" y="6.5" width="14" height="12" rx="4.5"/><circle cx="9.5" cy="11.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11.5" r="1.3" fill="currentColor" stroke="none"/><path d="M9 15.2c1 1.6 5 1.6 6 0"/></svg></button>
 </div>
 
 <button class="fab hide" id="fab" onclick="openFloater()" title="呼出小淮宝助手"><span class="ic ic-spark"></span></button>
@@ -884,7 +957,7 @@ textarea{resize:vertical}
 
 <div class="mask" id="clMask">
   <div class="modal">
-    <h2><span class="ic ic-bell"></span>更新与修改通知 <span class="chip new" id="clBadge">最新 v0.9.1</span></h2>
+    <h2><span class="ic ic-bell"></span>更新与修改通知 <span class="chip new" id="clBadge">最新 v1.0.1</span></h2>
     <div class="mbody scroll-smooth" id="clBody"></div>
     <div class="mfoot">
       <button class="btn" onclick="hideChangelog()">关闭</button>
@@ -947,9 +1020,47 @@ textarea{resize:vertical}
   </div>
 </div>
 
+<!-- v0.9.2 表情大图预览 -->
+<div id="imgView" onclick="this.classList.remove('on');this.innerHTML=''"></div>
+
+<!-- v0.9.3 手机端实时预览(桌面端自动隐藏) -->
+<button id="mpPreviewBtn" type="button" aria-label="实时预览">
+  <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>预览
+</button>
+<div id="mobilePreview">
+  <div class="mp-mask" onclick="closeMobilePreview()"></div>
+  <div class="mp-card" onclick="event.stopPropagation()">
+    <div class="mp-head"><b>实时预览</b><button class="mp-x" type="button" onclick="closeMobilePreview()" aria-label="关闭">✕</button></div>
+    <div class="mp-stage scroll-smooth" id="mpStage"></div>
+  </div>
+</div>
+
 <script>
-const APP_VERSION = '0.9.1';
+const APP_VERSION = '1.0.1';
 const CHANGELOG = [
+  { v:'1.0.1', d:'2026-09-12', items:[
+    {t:'fix', s:'修复手机端点 Dock 中心气泡弹出内容后气泡立刻收缩:展开态改由独立 class 控制,放大常驻表示"助手进行中",内容显示期间不移除'},
+    {t:'chg', s:'中心气泡改为开关式:再点气泡/点面板外部/按 ESC/切换页面均可收起;助手面板不再强制跳转编辑器页,停在当前界面浮层显示'},
+    {t:'add', s:'手机端助手面板改为 Dock 正上方居中底部面板(四向安全区适配),触屏禁用标题拖拽防错位,面板补 .28s 弹簧入场并适配减弱动态效果'},
+  ]},
+  { v:'1.0', d:'2026-09-12', items:[
+    {t:'add', s:'启动画面重做:深黑径向渐变(#1a1a1a→#000)+极淡噪点,视觉重心微下移,替代旧纯色启动页'},
+    {t:'add', s:'加粗 L 字母 Logo 纯白微发光入场(scale .8→1,600ms),双圈脉冲光环承担"运行中"质感'},
+    {t:'add', s:'巨幅水印图床底纹(60vw、-12°、5% 白,最底层不拦截,加载失败自动隐藏),右下角 © LinH 署名'},
+    {t:'chg', s:'错峰入场(Logo→标题 250ms→水印/文案 400ms→加载点 550ms),停留缩短至 1.5s,退出上移淡出 400ms'},
+    {t:'fix', s:'启动画面四向安全区适配、全程防误触、prefers-reduced-motion 降级,水印随屏退出不残留'},
+  ]},
+  { v:'0.9.3', d:'2026-09-12', items:[
+    {t:'fix', s:'修复手机端功能区点空白缝隙滑不动:预览区 flex 居中滚动死区改为 margin:auto 居中'},
+    {t:'fix', s:'手机端参数面板/预览取消嵌套滚动,统一由页面单轴滚动,任何位置都能跟随手势滑动'},
+    {t:'chg', s:'功能卡片手机端单列+加大触摸热区(84px),滚动容器补全惯性滚动与边缘回弹'},
+    {t:'add', s:'手机端编辑器新增「预览」胶囊:点击弹出毛玻璃全屏实时预览(滑块调整实时同步),适配安全区,点空白/✕/ESC 关闭'},
+  ]},
+  { v:'0.9.2', d:'2026-09-12', items:[
+    {t:'add', s:'AI 语境表情:回复时自动从本地表情库挑选表情图(开心/撒娇/无语/生气/害羞等 7 类情绪匹配),60% 概率附图'},
+    {t:'add', s:'用户发表情时 AI 必回表情;连续两轮不重复同一张;空表情库自动降级纯文字'},
+    {t:'add', s:'AI 表情 80x80 与文字内联混排,点击毛玻璃大图预览,加载失败显示文字占位'},
+  ]},
   { v:'0.9.1', d:'2026-09-12', items:[
     {t:'chg', s:'核心风格回归 Neumorphism 拟态:阴影 6/12px,圆角 26px,玻璃仅限弹窗/启动屏/语音条/表情半窗'},
     {t:'fix', s:'删除中心气泡十字菜单,首页恢复简洁布局'},
@@ -1116,9 +1227,11 @@ function go(page){
   document.getElementById('dock').style.display=page==='editor'?'none':'flex';
   document.getElementById('fab').classList.toggle('hide',page!=='editor');
   document.getElementById('floater').classList.remove('on');
+  document.querySelector('.dock .center')?.classList.remove('open');  /* v1.0.1 切页同步收起气泡展开态 */
   if(page==='functions')renderFunctions();
   if(page==='editor')renderEditor();
   if(page==='settings')loadSettings();
+  if(typeof updateMpBtn==='function')updateMpBtn();   /* v0.9.3 手机预览入口仅编辑器显示 */
 }
 
 function toggleAcc(el){
@@ -1297,6 +1410,40 @@ function renderPreview(id){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('#previewMode button');if(b){b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderPreview(state.current);}});
 
+/* ============ v0.9.3 手机端实时气泡预览:点胶囊弹出 fixed 预览层 ============ */
+let mpObserver=null;
+function openMobilePreview(){
+  const layer=document.getElementById('mobilePreview');
+  if(layer.classList.contains('preview-active'))return;
+  if(state.current)renderPreview(state.current);
+  const src=document.getElementById('stageBody'),mp=document.getElementById('mpStage');
+  mp.innerHTML=src.innerHTML;
+  layer.classList.add('preview-active');
+  /* 预览源变化(拖滑块/切模式)实时同步,保留弹层内滚动位置 */
+  if(mpObserver)mpObserver.disconnect();
+  mpObserver=new MutationObserver(()=>{const st=mp.scrollTop;mp.innerHTML=src.innerHTML;mp.scrollTop=st;});
+  mpObserver.observe(src,{childList:true,subtree:true,attributes:true,characterData:true});
+}
+function closeMobilePreview(){
+  document.getElementById('mobilePreview').classList.remove('preview-active');
+  if(mpObserver){mpObserver.disconnect();mpObserver=null;}
+  document.getElementById('mpStage').innerHTML='';
+}
+/* 仅手机端(<=900px 单列断点)且在编辑器页显示入口 */
+function updateMpBtn(){
+  const btn=document.getElementById('mpPreviewBtn');if(!btn)return;
+  const inEditor=document.getElementById('p-editor').style.display!=='none';
+  btn.style.display=(window.innerWidth<=900&&inEditor)?'flex':'none';
+}
+(function(){
+  const btn=document.getElementById('mpPreviewBtn');
+  let touched=false;
+  btn.addEventListener('touchstart',e=>{touched=true;e.preventDefault();openMobilePreview();},{passive:false});
+  btn.addEventListener('click',()=>{if(touched){touched=false;return;}openMobilePreview();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobilePreview();});
+  window.addEventListener('resize',()=>{if(window.innerWidth>900)closeMobilePreview();updateMpBtn();});
+})();
+
 function openFloater(){
   document.getElementById('floater').classList.add('on');
   document.getElementById('fab').classList.add('hide');
@@ -1304,8 +1451,21 @@ function openFloater(){
   updateFloaterMode();
   renderAiSettings();
 }
-function closeFloater(){document.getElementById('floater').classList.remove('on');if(document.getElementById('p-editor').style.display!=='none')document.getElementById('fab').classList.remove('hide');cancelAutoSend();}
+function closeFloater(){document.getElementById('floater').classList.remove('on');document.querySelector('.dock .center')?.classList.remove('open');if(document.getElementById('p-editor').style.display!=='none')document.getElementById('fab').classList.remove('hide');cancelAutoSend();}
 function openEditorAI(){if(document.getElementById('p-editor').style.display==='none'){if(!state.current)state.current='bubble';go('editor');}openFloater();}
+/* v1.0.1 Dock 气泡:点一次放大常驻+弹出内容(不再强制跳编辑器页,避免气泡随 Dock 消失),再点收起 */
+function toggleDockAI(){
+  if(document.getElementById('floater').classList.contains('on')){closeFloater();return;}
+  if(!state.current)state.current='bubble';
+  openFloater();
+  document.querySelector('.dock .center')?.classList.add('open');
+}
+/* 点气泡与面板外部 / ESC → 收起;同一次点击的中心气泡在忽略名单内,不会秒关 */
+document.addEventListener('click',e=>{
+  const f=document.getElementById('floater');
+  if(f&&f.classList.contains('on')&&!e.target.closest('#floater')&&!e.target.closest('.dock .center')&&!e.target.closest('#fab'))closeFloater();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const f=document.getElementById('floater');if(f&&f.classList.contains('on'))closeFloater();}});
 function switchF(btn,name){btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');['ai','code','set'].forEach(n=>document.getElementById('fp-'+n).classList.toggle('on',n===name));if(name==='set')renderAiSettings();}
 function updateFloaterMode(){
   const s=getSettings();
@@ -1321,7 +1481,7 @@ function updateFloaterMode(){
 (function(){
   const head=document.getElementById('fhead'),flo=document.getElementById('floater');
   let sx,sy,ox,oy,drag=false;
-  const start=(e)=>{if(e.target.closest('button'))return;drag=true;const t=e.touches?e.touches[0]:e;sx=t.clientX;sy=t.clientY;const r=flo.getBoundingClientRect();ox=r.left;oy=r.top;flo.style.right='auto';flo.style.bottom='auto';flo.style.left=ox+'px';flo.style.top=oy+'px';};
+  const start=(e)=>{if(e.target.closest('button'))return;if(e.touches&&window.innerWidth<=900)return;/* v1.0.1 手机端禁用拖拽,避免内联定位破坏底部面板布局 */drag=true;const t=e.touches?e.touches[0]:e;sx=t.clientX;sy=t.clientY;const r=flo.getBoundingClientRect();ox=r.left;oy=r.top;flo.style.right='auto';flo.style.bottom='auto';flo.style.left=ox+'px';flo.style.top=oy+'px';};
   const move=(e)=>{if(!drag)return;const t=e.touches?e.touches[0]:e;let nx=ox+(t.clientX-sx),ny=oy+(t.clientY-sy);nx=Math.max(0,Math.min(window.innerWidth-flo.offsetWidth,nx));ny=Math.max(0,Math.min(window.innerHeight-flo.offsetHeight,ny));flo.style.left=nx+'px';flo.style.top=ny+'px';if(e.cancelable)e.preventDefault();};
   const end=()=>{drag=false;};
   head.addEventListener('mousedown',start);head.addEventListener('touchstart',start,{passive:true});
@@ -1401,12 +1561,81 @@ function pushMsg(who,text){
   return d;
 }
 /* v0.9 emoji:将文本中的图片链接(http/https + 图片后缀)渲染为 <img> */
+/* v0.9.2:支持 \u0000Curl\u0000 标记渲染为内联 .chat-emoji(80x80 混排) */
 function renderEmojiInText(text){
+  /* 先抽出 chat-emoji 标记,避免被通用图片正则吃掉 */
+  const chats=[];
+  let t=text.replace(/\u0000C(https?:\/\/[^\s\u0000]+?\.(?:png|jpe?g|gif|webp))\u0000/gi,(m,u)=>{chats.push(u);return'\u0000CI'+(chats.length-1)+'\u0000';});
   const urls=[];
-  const safe=text.replace(/https?:\/\/[^\s，。、；,;！？!?'"<>）)]+?\.(png|jpe?g|gif|webp)/gi,m=>{urls.push(m);return'\u0000E'+(urls.length-1)+'\u0000';});
-  let html=esc(safe);
+  t=t.replace(/https?:\/\/[^\s，。、；,;！？!?'"<>）)]+?\.(png|jpe?g|gif|webp)/gi,m=>{urls.push(m);return'\u0000E'+(urls.length-1)+'\u0000';});
+  let html=esc(t);
   urls.forEach((u,i)=>{html=html.replace('\u0000E'+i+'\u0000',`<img class="emoji-msg-img" src="${u}" alt="表情" loading="lazy" onerror="this.replaceWith(document.createTextNode('[图片加载失败]'))"/>`);});
+  chats.forEach((u,i)=>{html=html.replace('\u0000CI'+i+'\u0000',`<img class="chat-emoji" src="${u}" alt="表情" loading="lazy" onclick="vShowImg('${u.replace(/'/g,"\\'")}')" onerror="this.replaceWith(document.createTextNode('[表情加载失败]'))"/>`);});
   return html;
+}
+
+/* ============ v0.9.2 AI 语境表情匹配 ============ */
+const V_EMOJI_RATE=0.6;                 /* 全局附图概率,可改 */
+let vLastEmojiUrls=[];                  /* 最近发过的表情 URL(防连续重复) */
+/* 情绪 → 关键词;匹配用户输入/AI回复 + 表情名称/合集名 */
+const V_MOODS=[
+ {k:'happy', w:['哈哈','开心','高兴','快乐','棒','厉害','赞','太好了','耶','嘻嘻','可爱','喜欢','666','牛','感谢','谢谢','夸奖','表扬','优秀','不错','好玩','有趣']},
+ {k:'cute',  w:['撒娇','抱抱','贴贴','亲亲','么么','呜','委屈','卖萌','求求','嘛','人家']},
+ {k:'shy',   w:['害羞','羞','脸红','不好意思','爱你','心动']},
+ {k:'speechless', w:['无语','额','呃','醉了','离谱','服了','什么鬼','无言','汗','离谱','啊这']},
+ {k:'angry', w:['生气','气死','愤怒','讨厌','烦人','哼','怼','骂','垃圾','差劲','气死我','可恶','吵']},
+ {k:'sad',   w:['难过','伤心','哭','不开心','失落','沮丧','呜呜','心痛']},
+ {k:'surprise', w:['哇','卧槽','震惊','真的假的','没想到','居然','竟然','惊讶']}
+];
+/* 读取全量表情库(扁平):{name,url,cat} */
+function vGetAllEmojis(){
+  let cols={};
+  try{const s=localStorage.getItem('emojiCollections');cols=s?JSON.parse(s):{};}catch(e){cols={};}
+  const all=[];
+  Object.keys(cols).forEach(cat=>(cols[cat]||[]).forEach(it=>{if(it&&it.url)all.push({name:it.name||'',url:it.url,cat:cat});}));
+  return all;
+}
+/* 分析语境,返回情绪 key 或 null */
+function vDetectMood(text){
+  let best=null,bestN=0;
+  V_MOODS.forEach(m=>{const n=m.w.reduce((s,w)=>s+(text.indexOf(w)>=0?1:0),0);if(n>bestN){bestN=n;best=m.k;}});
+  return best;
+}
+/* 从表情库挑一张:先情绪匹配(名称/合集名命中),失败则随机;连续重复跳过 */
+function vPickEmoji(userText,replyText,force){
+  const all=vGetAllEmojis();
+  if(!all.length)return null;                    /* 空库降级:纯文字,不报错 */
+  if(!force && Math.random()>V_EMOJI_RATE)return null;
+  const mood=vDetectMood((userText||'')+'\n'+(replyText||''));
+  let pool=all;
+  if(mood){
+    const hit=all.filter(e=>{
+      const hay=(e.name+' '+e.cat).toLowerCase();
+      return V_MOODS.find(m=>m.k===mood).w.some(w=>hay.indexOf(w.toLowerCase())>=0)||hay.indexOf(mood)>=0;
+    });
+    if(hit.length)pool=hit;
+  }
+  /* 排除最近两轮发过的 */
+  let fresh=pool.filter(e=>vLastEmojiUrls.indexOf(e.url)<0);
+  if(!fresh.length)fresh=all.filter(e=>vLastEmojiUrls.indexOf(e.url)<0);
+  if(!fresh.length)fresh=all;
+  return fresh[Math.floor(Math.random()*fresh.length)];
+}
+/* AI 回复出口统一处理:命中则把表情标记内联到句末(不独占一行) */
+function aiReplyWithEmoji(q,text){
+  try{
+    const userSentImg=/https?:\/\/[^\s]+\.(png|jpe?g|gif|webp)/i.test(q||''); /* 用户发图→必回表情 */
+    const em=vPickEmoji(q,text,userSentImg);
+    if(!em)return text;
+    vLastEmojiUrls.push(em.url);if(vLastEmojiUrls.length>2)vLastEmojiUrls.shift();
+    return text.replace(/[。！？!?\s]*$/,'')+' \u0000C'+em.url+'\u0000';
+  }catch(e){return text;}
+}
+/* v0.9.2 表情大图预览 */
+function vShowImg(url){
+  const v=document.getElementById('imgView');
+  v.innerHTML=`<img src="${url}" alt="表情预览" onerror="this.replaceWith(document.createTextNode('[表情加载失败]'))"/>`;
+  v.classList.add('on');
 }
 async function sendAI(){
   const inp=document.getElementById('aiIn');const q=inp.value.trim();if(!q)return;
@@ -1433,20 +1662,20 @@ async function sendAI(){
       if(parsed.think) pushThinkCap(parsed.think);
       const finalText = parsed.content || '(空回复)';
       msgHistory.push({role:'assistant',content:finalText});
-      pushMsg('a',finalText);
+      pushMsg('a',aiReplyWithEmoji(q,finalText));   /* v0.9.2 语境表情 */
       renderAiSettings();
     }catch(e){
       thinking.remove();
       pushMsg('err','AI 调用失败:'+e.message);
       const local=localReply(q);
       msgHistory.push({role:'assistant',content:local});
-      pushMsg('a','已切换到本地回复:\n'+local);
+      pushMsg('a',aiReplyWithEmoji(q,'已切换到本地回复:\n'+local));
     }
   }else{
     setTimeout(()=>{
       const local=localReply(q);
       msgHistory.push({role:'assistant',content:local});
-      pushMsg('a',local);
+      pushMsg('a',aiReplyWithEmoji(q,local));
       renderAiSettings();
     },300);
   }
@@ -2219,7 +2448,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelper();});
 
 /* ============ v0.7.1 · 全能小助手(对话内自动识别意图 + 屏幕控制执行) ============ */
 function vPage(){return ['home','functions','editor','settings'].find(p=>{const el=document.getElementById('p-'+p);return el&&el.style.display!=='none';})||'home';}
-function vCloseFloat(){try{document.getElementById('floater').classList.remove('on');}catch(e){}}
+function vCloseFloat(){try{document.getElementById('floater').classList.remove('on');document.querySelector('.dock .center')?.classList.remove('open');/* v1.0.1 AI 执行跳转同步收起气泡 */}catch(e){}}
 function vReply(text,opts){
   const d=pushMsg('a',text);
   if(opts&&opts.length){
@@ -2410,9 +2639,9 @@ window.addEventListener('load',()=>{
       sessionStorage.setItem('linh-changelog-shown','1');
       setTimeout(openChangelog,500);
     }
-  },2200);
+  },2100);  /* v1.0:进入 600ms + 停留 1500ms */
 });
-setTimeout(()=>{const s=document.getElementById('splash');if(s)s.classList.add('hide');},3500);
+setTimeout(()=>{const s=document.getElementById('splash');if(s)s.classList.add('hide');},4000);
 </script>
 </body>
 </html>
