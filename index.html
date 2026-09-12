@@ -3,9 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#111214"/>
+<meta name="theme-color" content="#000000"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="美化小叽"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="assets/icon-512.png"/>
+<link rel="apple-touch-startup-image" href="https://img2.tofaka.com/autoupload/fr/Zy9nZr8qknZ0w4NQ-30sTrs9etjV1KKV501BnyUAd0Oyl5f0KlZfm6UsKj-HyTuv/20260912/6YjW/1440X1440/%E6%97%A0%E6%A0%87%E9%A2%9885_20260909171017.png/webp"/>
 <title>LinHの美化小叽</title>
 <style>
 :root{
@@ -103,7 +108,10 @@
 [data-theme="dark"] .field label .v:hover,[data-theme="dark"] .seg button.on,[data-theme="dark"] #previewMode button.on,[data-theme="dark"] .ftabs button.on,[data-theme="dark"] .ai-set-item .seg-mini button.on{background:rgba(255,255,255,.1);color:var(--text)}
 [data-theme="dark"] .ab code,[data-theme="dark"] .kv{background:rgba(255,255,255,.08);color:var(--text)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+/* v1.1 全屏修复:背景挂到 html(DOM 首帧即同色,独立应用不闪白),统一 100vh 不引入 dvh,body 兜底防横向滚动 */
+html{min-height:100%;background:var(--bg)}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+body{overflow-x:hidden}
 body::-webkit-scrollbar{display:none}
 /* v0.8.4 glass:背景光斑层(最低层)+ 统一玻璃类 */
 .bg-blur{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
@@ -156,11 +164,22 @@ textarea{resize:vertical}
 @media (prefers-reduced-motion:reduce){.splash-ring,.splash-d i,.splash-wm,.splash-copy{animation:none}.splash-logo,.splash-t,.splash-s,.splash-d{animation-duration:.01ms;animation-delay:0ms}#splash{transition:opacity .2s}}
 
 .topbar{position:sticky;top:0;z-index:50;background:rgba(238,240,244,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(210,215,222,.4)}
-.tb{max-width:1240px;margin:0 auto;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+/* v1.1 顶栏吃顶部安全区(black-translucent 下不被灵动岛压),宽度 1240→1200 */
+.tb{max-width:1200px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;min-width:0}
 .brand small{color:var(--mute);font-weight:400;font-size:11px;margin-left:2px}
 .bm{width:28px;height:28px;border-radius:9px;background:#1a1a1a;color:var(--ink-inv);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;box-shadow:var(--sh-out-sm),inset 0 1px 0 rgba(255,255,255,.12)}
 .ta{display:flex;gap:8px;flex-shrink:0}
+/* v1.1 移动端 Hamburger:桌面隐藏;三横线→✕ 弹簧变形 */
+.nav-toggle{display:none;width:44px;height:44px;border-radius:50%;background:var(--bg);color:var(--text);border:none;box-shadow:var(--sh-out-sm);align-items:center;justify-content:center;cursor:pointer;transition:transform .24s var(--ease-spring),box-shadow .18s}
+.nav-toggle:active{box-shadow:var(--sh-in-sm);transform:scale(.92)}
+.nav-toggle .hbg{position:relative;width:18px;height:12px}
+.nav-toggle .hbg i{position:absolute;left:0;right:0;height:2px;border-radius:2px;background:currentColor;transition:transform .25s var(--ease-spring),opacity .18s}
+.nav-toggle .hbg i:nth-child(1){top:0}.nav-toggle .hbg i:nth-child(2){top:5px}.nav-toggle .hbg i:nth-child(3){top:10px}
+.nav-toggle.open .hbg i:nth-child(1){top:5px;transform:rotate(45deg)}
+.nav-toggle.open .hbg i:nth-child(2){opacity:0}
+.nav-toggle.open .hbg i:nth-child(3){top:5px;transform:rotate(-45deg)}
+@keyframes nav-in{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
 
 /* v0.8.1 图标美化:毛玻璃圆形底+hover放大 */
 .ib{width:40px;height:40px;border-radius:50%;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;color:var(--text);--icb:var(--bg);position:relative;box-shadow:var(--sh-out-sm);transition:transform .24s var(--ease-spring),box-shadow .18s,background .3s,color .3s;cursor:pointer;border:none}
@@ -231,7 +250,8 @@ textarea{resize:vertical}
 .ic-info::before{inset:1px;border:1.5px solid currentColor;border-radius:50%}
 .ic-info::after{top:3.5px;left:50%;width:1.5px;height:1.5px;margin-left:-.75px;background:currentColor;border-radius:50%;box-shadow:0 3px 0 currentColor,0 5.5px 0 currentColor}
 
-.app{max-width:1240px;margin:0 auto;padding:18px 16px 120px}
+/* v1.1 内容壳 1200 居中,底部留白吃安全区避免 Dock 遮挡 */
+.app{max-width:1200px;margin:0 auto;padding:18px 16px calc(120px + env(safe-area-inset-bottom,0px))}
 .card{background:var(--bg);border:none;border-radius:26px;box-shadow:var(--sh-out);padding:22px}
 #p-home{display:flex;flex-direction:column;gap:16px}
 .hero h1{margin:0;font-size:clamp(22px,3vw,28px);letter-spacing:-.01em;line-height:1.25}
@@ -281,7 +301,8 @@ textarea{resize:vertical}
 .deco .dt{color:var(--mute);font-size:11.5px;line-height:1.5;flex:1}
 
 /* v0.8.4 glass+bubble:iPhone 式松感 Dock(4 按钮 + 中心按钮) */
-.dock{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;justify-content:space-around;gap:28px;padding:12px 20px;width:min(90%,440px);margin:0 auto;background:var(--bg);border-radius:32px;border:none;box-shadow:var(--sh-out);z-index:40}
+/* v1.1 Dock 吃底部安全区,Home Indicator 区不露白 */
+.dock{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;align-items:center;justify-content:space-around;gap:28px;padding:12px 20px;width:min(90%,440px);margin:0 auto;background:var(--bg);border-radius:32px;border:none;box-shadow:var(--sh-out);z-index:40}
 .dock .item{width:48px;height:48px;border-radius:50%;background:var(--bg);border:none;color:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-out-sm);transition:transform .25s var(--ease-spring),box-shadow .22s,background .2s;cursor:pointer}
 .dock .item svg{width:22px;height:22px}
 .dock .item:hover{transform:translateY(-2px) scale(1.12)}
@@ -366,11 +387,27 @@ textarea{resize:vertical}
   .panel{max-height:none;overflow:visible;height:auto}
   .stage{overflow:visible}
   .stage-body{overflow:visible;min-height:420px;overscroll-behavior:auto}
-  .fgrid{grid-template-columns:1fr;gap:14px}
   .fc{min-height:84px}
   /* v1.0.1 手机端助手面板:Dock 正上方居中底部面板,放大的中心气泡常驻可见可点 */
   .floater{left:12px;right:12px;bottom:calc(114px + env(safe-area-inset-bottom,0px));width:auto;height:min(58vh,520px);max-height:calc(100vh - 156px);border-radius:26px;transform-origin:50% 100%}
 }
+/* ============ v1.1 响应式三状态 ============ */
+/* 平板 769~1024:功能卡片两列,顶栏隐藏版本副标释放空间 */
+@media(max-width:1024px){
+  .fgrid{grid-template-columns:repeat(2,1fr);gap:14px}
+  .brand small{display:none}
+}
+/* 手机 <768:卡片单列;顶栏按钮收进 Hamburger 毛玻璃下拉,触控行 44px */
+@media(max-width:768px){
+  .fgrid{grid-template-columns:1fr;gap:14px}
+  .nav-toggle{display:inline-flex}
+  .ta{display:none;position:absolute;top:100%;right:12px;flex-direction:column;gap:6px;padding:10px;min-width:184px;margin-top:6px;background:var(--glass-bg-strong);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-border);border-radius:22px;box-shadow:var(--sh-modal);z-index:51}
+  .ta.open{display:flex;animation:nav-in .22s var(--ease-spring) both}
+  .ta .ib{width:100%;height:44px;border-radius:16px;justify-content:flex-start;gap:12px;padding:0 12px}
+  .ta .ib::after{content:attr(title);font-size:13px;font-weight:500;color:var(--text)}
+  .ta .ib .dt{right:12px}
+}
+@media(max-width:768px) and (prefers-reduced-motion:reduce){.ta.open{animation:none}.nav-toggle .hbg i{transition:none}}
 .panel{background:var(--bg);border:none;border-radius:26px;padding:16px;height:fit-content;max-height:calc(100vh - 140px);overflow-y:auto;box-shadow:var(--sh-out)}
 .panel h3{margin:14px 0 8px;font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
 .panel h3:first-child{margin-top:0}
@@ -647,8 +684,9 @@ textarea{resize:vertical}
 
 <header class="topbar">
   <div class="tb">
-    <div class="brand"><div class="bm">L</div>美化小叽<small id="brandVer">· v1.0.1</small></div>
-    <div class="ta">
+    <div class="brand"><div class="bm">L</div>美化小叽<small id="brandVer">· v1.1</small></div>
+    <button class="nav-toggle" id="navToggle" aria-label="菜单" onclick="toggleNavMenu()"><span class="hbg"><i></i><i></i><i></i></span></button>
+    <div class="ta" id="navMenu">
       <button class="ib" id="btnUpdates" title="更新日志" onclick="openChangelog()"><span class="ic ic-bell"></span><span class="dt"></span></button>
       <button class="ib" title="安装到桌面" onclick="tryInstall()"><span class="ic ic-inst"></span></button>
       <button class="ib" title="设置" onclick="go('settings')"><span class="ic ic-gear"></span></button>
@@ -662,7 +700,7 @@ textarea{resize:vertical}
 
 <div id="p-home">
   <div class="card hero">
-    <span class="chip"><span style="width:5px;height:5px;border-radius:50%;background:var(--text-primary)"></span>v1.0.1 · 单文件本地版</span>
+    <span class="chip"><span style="width:5px;height:5px;border-radius:50%;background:var(--text-primary)"></span>v1.1 · 单文件本地版</span>
     <h1>为「小手机」软件<br/>打造属于你的美化主题</h1>
     <p>参数化编辑气泡、聊天页、Memory、头像框、按钮、输入框和 HTML 小插件,实时预览、支持自定义代码,搭配小淮宝助手辅助设计。</p>
     <div class="hcta">
@@ -957,7 +995,7 @@ textarea{resize:vertical}
 
 <div class="mask" id="clMask">
   <div class="modal">
-    <h2><span class="ic ic-bell"></span>更新与修改通知 <span class="chip new" id="clBadge">最新 v1.0.1</span></h2>
+    <h2><span class="ic ic-bell"></span>更新与修改通知 <span class="chip new" id="clBadge">最新 v1.1</span></h2>
     <div class="mbody scroll-smooth" id="clBody"></div>
     <div class="mfoot">
       <button class="btn" onclick="hideChangelog()">关闭</button>
@@ -1036,8 +1074,15 @@ textarea{resize:vertical}
 </div>
 
 <script>
-const APP_VERSION = '1.0.1';
+const APP_VERSION = '1.1';
 const CHANGELOG = [
+  { v:'1.1', d:'2026-09-12', items:[
+    {t:'add', s:'真正可安装的 PWA:同源 manifest.json + 真实 Service Worker,桌面 Chrome/Edge 地址栏可安装为独立窗口,Android 可添加到主屏幕'},
+    {t:'add', s:'离线可用:应用壳(index/manifest/图标/启动图)预缓存,断网照常打开;AI 对话等跨域 API 请求一律直通,绝不缓存'},
+    {t:'add', s:'maskable 黑底白 L 图标 192/512,任何安卓遮罩(圆/方/泪滴)不露白;iOS 补 apple-touch-icon 与原图启动图引用'},
+    {t:'fix', s:'独立应用全屏修复:black-translucent 状态栏,顶栏吃顶部安全区、Dock/内容吃底部安全区,背景铺到物理边缘无白边,统一 100vh 不闪白'},
+    {t:'add', s:'响应式三状态:>1024 桌面 1200px 多列,769~1024 平板两列,<768 手机单列 + Hamburger 毛玻璃菜单(三横线变 ✕、触控行 44px、点外/ESC 关闭)'},
+  ]},
   { v:'1.0.1', d:'2026-09-12', items:[
     {t:'fix', s:'修复手机端点 Dock 中心气泡弹出内容后气泡立刻收缩:展开态改由独立 class 控制,放大常驻表示"助手进行中",内容显示期间不移除'},
     {t:'chg', s:'中心气泡改为开关式:再点气泡/点面板外部/按 ESC/切换页面均可收起;助手面板不再强制跳转编辑器页,停在当前界面浮层显示'},
@@ -1142,10 +1187,7 @@ const CHANGELOG = [
     {t:'add', s:'首版:8 模块参数化编辑 + 实时预览 + 小淮宝助手'},
   ]},
 ];
-const MANIFEST = {name:"LinHの美化小叽",short_name:"美化小叽",start_url:"./",scope:"./",display:"standalone",background_color:"#eef0f4",theme_color:"#111214",description:"小手机主题美化工具",icons:[
-{src:"data:image/svg+xml;utf8,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='42' fill='#111214'/><text x='96' y='128' text-anchor='middle' font-family='sans-serif' font-size='104' font-weight='600' fill='white'>L</text></svg>"),sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"},
-{src:"data:image/svg+xml;utf8,"+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='#111214'/><text x='256' y='340' text-anchor='middle' font-family='sans-serif' font-size='280' font-weight='600' fill='white'>L</text></svg>"),sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
-try{const b=new Blob([JSON.stringify(MANIFEST)],{type:'application/manifest+json'});const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);document.head.appendChild(l);}catch(e){}
+/* v1.1:manifest 已改为同源真实文件 manifest.json(head 中 <link rel="manifest">),Blob 伪注入移除,否则浏览器不满足安装条件 */
 let deferredInstall=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;if(!sessionStorage.getItem('linh-installbar-hidden')) setTimeout(()=>document.getElementById('installBar').classList.add('on'),3500);});
 window.addEventListener('appinstalled',()=>{toast('已作为独立应用安装');hideInstallBar();});
@@ -1159,10 +1201,29 @@ function tryInstall(){
   if(isSafari){alert('iOS Safari 请点击底部「分享」→「添加到主屏幕」。这是 PWA 安装,打开后全屏无地址栏。');return;}
   alert('当前浏览器暂未提供安装入口。请用 Chrome / Edge 通过 http(s) 打开本页。');
 }
+/* v1.1:注册同源真实 sw.js(壳子离线、导航网络优先、AI API 直通);file:// 本地双击打开时不注册 */
 if('serviceWorker' in navigator && location.protocol!=='file:'){
-  const swCode=`const C='linh-v${APP_VERSION}';self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith((async()=>{const c=await caches.match(e.request);if(c)return c;try{const r=await fetch(e.request);if(r&&r.ok&&new URL(e.request.url).origin===location.origin){const cc=await caches.open(C);cc.put(e.request,r.clone());}return r;}catch(_){return c||new Response('offline',{status:503});}})());});`;
-  try{navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode],{type:'text/javascript'}))).catch(()=>{});}catch(e){}
+  try{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    /* 发现新版本 SW 接管后提示一次,无需用户手动清缓存 */
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(!sessionStorage.getItem('linh-sw-updated')){sessionStorage.setItem('linh-sw-updated','1');toast('已更新到最新版');}
+    });
+  }catch(e){}
 }
+/* v1.1 移动端 Hamburger 菜单:开关 + 点外部/ESC/选项后自动收起 */
+function closeNavMenu(){document.getElementById('navMenu')?.classList.remove('open');document.getElementById('navToggle')?.classList.remove('open');}
+function toggleNavMenu(){
+  const m=document.getElementById('navMenu'),t=document.getElementById('navToggle');
+  const open=m.classList.toggle('open');t.classList.toggle('open',open);
+}
+document.getElementById('navMenu')?.addEventListener('click',()=>setTimeout(closeNavMenu,0));
+document.addEventListener('click',e=>{
+  if(!document.getElementById('navMenu')?.classList.contains('open'))return;
+  if(!e.target.closest('#navMenu')&&!e.target.closest('#navToggle'))closeNavMenu();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNavMenu();});
+window.addEventListener('resize',e=>{if(e.target.innerWidth>768)closeNavMenu();});
 
 /* ============ v0.5 · AI 人格与底层世界书 ============ */
 const AI_PERSONA=`你是「小淮宝助手」,LinHの美化小叽内置的视觉美化助手。
@@ -1228,6 +1289,7 @@ function go(page){
   document.getElementById('fab').classList.toggle('hide',page!=='editor');
   document.getElementById('floater').classList.remove('on');
   document.querySelector('.dock .center')?.classList.remove('open');  /* v1.0.1 切页同步收起气泡展开态 */
+  if(typeof closeNavMenu==='function')closeNavMenu();  /* v1.1 切页收起 Hamburger 菜单 */
   if(page==='functions')renderFunctions();
   if(page==='editor')renderEditor();
   if(page==='settings')loadSettings();
