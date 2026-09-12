@@ -605,6 +605,10 @@ textarea{resize:vertical}
 .log-item li .tag.add{background:#059669;color:var(--ink-inv)}
 .log-item li .tag.chg{background:#d97706;color:var(--ink-inv)}
 .log-item li .tag.fix{background:#2563eb;color:var(--ink-inv)}
+/* v1.1补 补丁条目:紫色标签+🟣+缩小字号,与正式版本条目视觉区分(版本号不升) */
+.log-item li.patch-item{font-size:11.5px;color:var(--mute)}
+.log-item li.patch-item .tag.patch{background:#7c3aed;color:var(--ink-inv);letter-spacing:.06em}
+.log-item li.patch-item .tag.patch::before{content:'🟣';margin-right:3px;font-size:9px}
 
 .api-status{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;font-size:12.5px;box-shadow:var(--sh-in-sm)}
 .api-status .dot{width:8px;height:8px;border-radius:50%;background:var(--text-disabled);flex-shrink:0}
@@ -1188,9 +1192,9 @@ const CHANGELOG = [
     {t:'add', s:'maskable 黑底白 L 图标 192/512,任何安卓遮罩(圆/方/泪滴)不露白;iOS 补 apple-touch-icon 与原图启动图引用'},
     {t:'fix', s:'独立应用全屏修复:black-translucent 状态栏,顶栏吃顶部安全区、Dock/内容吃底部安全区,背景铺到物理边缘无白边,统一 100vh 不闪白'},
     {t:'add', s:'响应式三状态:>1024 桌面 1200px 多列,769~1024 平板两列,<768 手机单列 + Hamburger 毛玻璃菜单(三横线变 ✕、触控行 44px、点外/ESC 关闭)'},
-    {t:'chg', s:'整体视觉压缩一档更轻盈:Dock 按钮 48→36px 等大等距(中心钮 60→48),内容区 1200→1080,卡片圆角 26→20、内边距 22→16,拟态阴影 6/12→4/8,网格间距同步收窄,安全区与触控热区保留'},
-    {t:'add', s:'通用图片导入器:本地文件/剪贴板/URL 三来源,统一预览+确认/重选,自动压缩(GIF 保帧),表情添加已接入'},
-    {t:'add', s:'聊天气泡新增异形图模式:导入图片后在全屏拉伸编辑器拖 8 控制点框定拉伸区(框外固定/框内拉伸放文字),支持 4/3/2/1.5/1 倍率、左右朝向自动翻转,实时预览并随模块导出'},
+    {t:'patch', s:'整体视觉压缩一档更轻盈:Dock 按钮 48→36px 等大等距(中心钮 60→48),内容区 1200→1080,卡片圆角 26→20、内边距 22→16,拟态阴影 6/12→4/8,网格间距同步收窄,安全区与触控热区保留'},
+    {t:'patch', s:'通用图片导入器:本地文件/剪贴板/URL 三来源,统一预览+确认/重选,自动压缩(GIF 保帧),表情添加已接入'},
+    {t:'patch', s:'聊天气泡新增异形图模式:导入图片后在全屏拉伸编辑器拖 8 控制点框定拉伸区(框外固定/框内拉伸放文字),支持 4/3/2/1.5/1 倍率、左右朝向自动翻转,实时预览并随模块导出'},
   ]},
   { v:'1.0.1', d:'2026-09-12', items:[
     {t:'fix', s:'修复手机端点 Dock 中心气泡弹出内容后气泡立刻收缩:展开态改由独立 class 控制,放大常驻表示"助手进行中",内容显示期间不移除'},
@@ -2186,8 +2190,8 @@ function confirmWelcome(){document.getElementById('welcomeMask').classList.remov
 function renderChangelog(){
   document.getElementById('clBadge').textContent='最新 v'+APP_VERSION;
   document.getElementById('clBody').innerHTML=CHANGELOG.map((log,i)=>{
-    const tagName={add:'新增',fix:'修复',chg:'调整'};
-    return `<div class="log-item"><div class="log-head"><b>v${log.v}</b><time>${log.d}</time>${i===0?'<span class="chip new">最新</span>':''}</div><ul>${log.items.map(it=>`<li><span class="tag ${it.t}">${tagName[it.t]||it.t}</span>${it.s}</li>`).join('')}</ul></div>`;
+    const tagName={add:'新增',fix:'修复',chg:'调整',patch:'补丁'};
+    return `<div class="log-item"><div class="log-head"><b>v${log.v}</b><time>${log.d}</time>${i===0?'<span class="chip new">最新</span>':''}</div><ul>${log.items.map(it=>`<li${it.t==='patch'?' class="patch-item"':''}><span class="tag ${it.t}">${tagName[it.t]||it.t}</span>${it.s}</li>`).join('')}</ul></div>`;
   }).join('');
 }
 function openChangelog(){renderChangelog();document.getElementById('clMask').classList.add('on');}
